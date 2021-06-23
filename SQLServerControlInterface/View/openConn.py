@@ -2,9 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 
 from View.ssci import *
-
-import json
-import pymssql
+from Control.connFunctions import *
 
 class OpenConnect:
     def __init__(self, master=None):
@@ -73,48 +71,25 @@ class OpenConnect:
         self.btnTest.grid(row=1, column=0, columnspan=2, pady=3)
 
     def Connect(self, event):
-        try:
-            conn = pymssql.connect(server=self.txtHost.get(),
-                                   user=self.txtUser.get(),
-                                   password=self.txtPassword.get(),
-                                   port=self.txtPort.get(),
-                                   database='master')
-
-            verify = True
-            ConnectionReady = True
-        except:
-            verify = False
-            messagebox.showerror(title="Connection for SQL Server", message="Connection Refused")
+        conn = Conn(self.txtHost.get(), self.txtPort.get(), self.txtUser.get(), self.txtPassword.get())
+        verify = conn.Open()
 
         if verify:
-            try:
-                connection = {
-                    "host": self.txtHost.get(),
-                    "port": self.txtPort.get(),
-                    "user": self.txtUser.get(),
-                    "password": self.txtPassword.get()
-                }
-
-                with open("connections.json", "w") as f:
-                    json.dump(connection, f)
-
+            verify = conn.Save()
+            if verify:
                 self.window.destroy()
-            except:
+            else:
                 messagebox.showerror(title="Error", message="Could not create save file")
+        else:
+            messagebox.showerror(title="Connection for SQL Server", message="Connection Refused")
 
     def Test(self, event):
-        try:
-            conn = pymssql.connect(server=self.txtHost.get(),
-                                   user=self.txtUser.get(),
-                                   password=self.txtPassword.get(),
-                                   port=self.txtPort.get(),
-                                   database='master')
+        verify = Conn(self.txtHost.get(), self.txtPort.get(), self.txtUser.get(), self.txtPassword.get()).Test()
 
+        if verify:
             messagebox.showinfo(title="Connection", message="Success!")
-        except:
+        else:
             messagebox.showerror(title="Connection Refused", message="Connection Refused")
-
-        pass
 
     def Exit(self, event):
         self.window.destroy()
