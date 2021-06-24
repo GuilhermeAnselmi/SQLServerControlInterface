@@ -5,8 +5,9 @@ from tkinter import ttk
 from globalConfig import *
 from View.openConn import *
 from Model.connectDB import *
+from Control.session import *
 
-Ready = False
+session = Session()
 
 class SSCI:
     def __init__(self, master=None):
@@ -33,7 +34,6 @@ class SSCI:
 
         self.btnRun = Button(self.up, text="RUN", bg="green", command=self.InsertTable, font=fontDefault)
         self.btnRun.grid(row=0, column=0, padx=2, pady=2)
-        self.btnRun['state'] = DISABLED
 
         #Scrollbar/Query's
         self.querys = Frame(self.window)
@@ -54,7 +54,7 @@ class SSCI:
     #Open Connect
     def Connect(self):
         self.open = Toplevel()
-        OpenConnect(self.open)
+        OpenConnect(self.open, session=session)
         self.open.protocol("WM_DELETE_WINDOW", self.Close_win)
         self.open.transient(self.master)
         self.open.focus_force()
@@ -62,23 +62,16 @@ class SSCI:
         #self.open.bind("<ButtonRelease>", print("ae"))
 
     def Close_win(self):
-        print('teste')
-        if Ready:
-            self.btnRun['state'] = NORMAL
-
         self.open.destroy()
         self.open = None
 
     def Disconnect(self):
-        cursor.execute("select name from sys.tables")
-        row = cursor.fetchone()
-        print(row)
-        self.btnRun['state'] = NORMAL
+        session.Over()
 
     def ExitSSCI(self):
         self.master.destroy()
 
-    #
+    #Insert Query Data
     def InsertTable(self):
         columns = ("#1", "#2")
 
