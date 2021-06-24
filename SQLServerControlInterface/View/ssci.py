@@ -4,6 +4,7 @@ from tkinter import ttk
 
 from globalConfig import *
 from View.openConn import *
+from View.settings import *
 from Model.connectDB import *
 from Control.session import *
 
@@ -24,7 +25,11 @@ class SSCI:
         filemenu.add_command(label="Disconnect", command=self.Disconnect, font=fontDefault)
         filemenu.add_command(label="Exit SSCI", command=self.ExitSSCI, font=fontDefault)
 
+        settingsmenu = Menu(menubar)
+        settingsmenu.add_command(label="Settings", command=self.Settings, font=fontDefault)
+
         menubar.add_cascade(label="File", menu=filemenu, foreground="white", font=fontDefault)
+        menubar.add_cascade(label="Tools", menu=settingsmenu, foreground="white", font=fontDefault)
 
         self.master.config(menu=menubar)
 
@@ -55,21 +60,35 @@ class SSCI:
     def Connect(self):
         self.open = Toplevel()
         OpenConnect(self.open, session=session)
-        self.open.protocol("WM_DELETE_WINDOW", self.Close_win)
+        self.open.protocol("WM_DELETE_WINDOW", self.CloseOpenConn)
         self.open.transient(self.master)
         self.open.focus_force()
         self.open.grab_set()
-        #self.open.bind("<ButtonRelease>", print("ae"))
 
-    def Close_win(self):
+    def CloseOpenConn(self):
         self.open.destroy()
         self.open = None
 
+    #Session Over
     def Disconnect(self):
         session.Over()
 
+    #Exit this SSCI
     def ExitSSCI(self):
         self.master.destroy()
+
+    #Open Settings Page
+    def Settings(self):
+        self.config = Toplevel()
+        Settings(self.config)
+        self.config.protocol("WM_DELETE_WINDOW", self.CloseSettings)
+        self.config.transient(self.master)
+        self.config.focus_force()
+        self.config.grab_set()
+
+    def CloseSettings(self):
+        self.config.destroy()
+        self.config = None
 
     #Insert Query Data
     def InsertTable(self):
