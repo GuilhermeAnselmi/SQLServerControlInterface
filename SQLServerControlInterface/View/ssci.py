@@ -2,42 +2,43 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 
-from globalConfig import *
+from globalStyle import *
 from View.openConn import *
 from View.settings import *
 from Model.connectDB import *
 from Control.session import *
 
 session = Session()
+fonts = Fonts()
 
 class SSCI:
-    def __init__(self, master=None):
+    def __init__(self, master=None, theme=None):
         self.master = master
 
         self.window = Frame(master)
         self.window.pack(side=TOP, fill="both")
 
         #Menu
-        menubar = Menu(self.master, bg="#1C1C1C")
+        menubar = Menu(self.master, bg=theme.menu)
 
         filemenu = Menu(menubar)
-        filemenu.add_command(label="Connect", command=self.Connect, font=fontDefault)
-        filemenu.add_command(label="Disconnect", command=self.Disconnect, font=fontDefault)
-        filemenu.add_command(label="Exit SSCI", command=self.ExitSSCI, font=fontDefault)
+        filemenu.add_command(label="Connect", command=self.Connect, font=fonts.default)
+        filemenu.add_command(label="Disconnect", command=self.Disconnect, font=fonts.default)
+        filemenu.add_command(label="Exit SSCI", command=self.ExitSSCI, font=fonts.default)
 
         settingsmenu = Menu(menubar)
-        settingsmenu.add_command(label="Settings", command=self.Settings, font=fontDefault)
+        settingsmenu.add_command(label="Settings", command=self.Settings, font=fonts.default)
 
-        menubar.add_cascade(label="File", menu=filemenu, foreground="white", font=fontDefault)
-        menubar.add_cascade(label="Tools", menu=settingsmenu, foreground="white", font=fontDefault)
+        menubar.add_cascade(label="File", menu=filemenu, foreground="white", font=fonts.default)
+        menubar.add_cascade(label="Tools", menu=settingsmenu, foreground="white", font=fonts.default)
 
         self.master.config(menu=menubar)
 
-        #Options up
-        self.up = Frame(self.window, bg="#363636")
+        #Exec's
+        self.up = Frame(self.window, bg=theme.exec)
         self.up.pack(side=TOP, fill="both")
 
-        self.btnRun = Button(self.up, text="RUN", bg="green", command=self.InsertTable, font=fontDefault)
+        self.btnRun = Button(self.up, text="RUN", bg="green", command=self.InsertTable, font=fonts.default)
         self.btnRun.grid(row=0, column=0, padx=2, pady=2)
 
         #Scrollbar/Query's
@@ -47,7 +48,7 @@ class SSCI:
         self.cs = Scrollbar(self.querys, orient="vertical")
         self.cs.pack(side=RIGHT, fill="y")
 
-        self.txtQuery = Text(self.querys, height=15, relief="raise", yscrollcommand=self.cs.set, bg="#4F4F4F", foreground="white", font=fontQuery)
+        self.txtQuery = Text(self.querys, height=15, relief="raise", yscrollcommand=self.cs.set, bg="#4F4F4F", foreground="white", font=fonts.query)
         self.txtQuery.pack(fill="both")
 
         self.cs.config(command=self.txtQuery.yview)
