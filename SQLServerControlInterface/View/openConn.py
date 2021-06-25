@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 
-from Control.connFunctions import *
+from Control.conn import *
 
 import os.path
 
