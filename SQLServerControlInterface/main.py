@@ -8,9 +8,7 @@ theme = Theme()
 class Main:
     # Check if the file exists
     if not os.path.isfile("config.json"):
-        # Alterar para função que cria as configurações Default
-        archive = open("config.json", "w")
-        archive.write("")
+        Config().CreateDefaults()
 
     interface = Tk()
     SSCI(interface, theme=theme)

@@ -29,8 +29,8 @@ class SSCI:
         settingsmenu = Menu(menubar)
         settingsmenu.add_command(label="Settings", command=self.Settings, font=fonts.default)
 
-        menubar.add_cascade(label="File", menu=filemenu, foreground="white", font=fonts.default)
-        menubar.add_cascade(label="Tools", menu=settingsmenu, foreground="white", font=fonts.default)
+        menubar.add_cascade(label="File", menu=filemenu, foreground=theme.fontMenu, font=fonts.default)
+        menubar.add_cascade(label="Tools", menu=settingsmenu, foreground=theme.fontMenu, font=fonts.default)
 
         self.master.config(menu=menubar)
 
@@ -38,7 +38,7 @@ class SSCI:
         self.up = Frame(self.window, bg=theme.exec)
         self.up.pack(side=TOP, fill="both")
 
-        self.btnRun = Button(self.up, text="RUN", bg="green", command=self.InsertTable, font=fonts.default)
+        self.btnRun = Button(self.up, text="RUN", bg="green", font=fonts.default, command=self.Run)
         self.btnRun.grid(row=0, column=0, padx=2, pady=2)
 
         #Scrollbar/Query's
@@ -48,7 +48,8 @@ class SSCI:
         self.cs = Scrollbar(self.querys, orient="vertical")
         self.cs.pack(side=RIGHT, fill="y")
 
-        self.txtQuery = Text(self.querys, height=15, relief="raise", yscrollcommand=self.cs.set, bg="#4F4F4F", foreground="white", font=fonts.query)
+        self.txtQuery = Text(self.querys, height=15, relief="raise", yscrollcommand=self.cs.set, bg=theme.query, foreground=theme.fontQuery, font=fonts.query)
+        self.txtQuery.bind("<Key>", self.Keypress)
         self.txtQuery.pack(fill="both")
 
         self.cs.config(command=self.txtQuery.yview)
@@ -91,6 +92,45 @@ class SSCI:
         self.config.destroy()
         self.config = None
 
+    #Run this query
+    def Run(self):
+        if session.active:
+            if self.txtQuery.get("1.0", END).strip() != "":
+                verify = True
+
+                try:
+                    #query = self.txtQuery.selection_get()      ERROR IN TRY EXCEPT
+                    query = self.txtQuery.get("sel.first", "sel.last")
+                except:
+                    query = self.txtQuery.get("1.0", END)
+
+                if query.split()[0].lower() == "use":
+                    verify = Data(session=session).TestDatabase(query.split()[1].lower())
+
+                    if verify:
+                        session.SetDatabase(query.split()[1].lower())
+
+                if verify:
+                    data = Data(session=session).Send(query)
+
+                    if data == 1:
+                        #Modificar para exibir quantas linhas foram afetadas
+                        messagebox.showinfo(title="Query Accepted", message="Success!")
+                    elif data == 0:
+                        messagebox.showwarning(title="Incorrect Query",
+                                               message="This query has incorrect instructions and/or arguments that do not exist in the database.")
+                    else:
+                        #Exibir a tabela com os dados
+                        print(data)
+                elif not verify:
+                    messagebox.showwarning(title="Database does not exists", message="The database entered was not found")
+        else:
+            messagebox.showwarning(title="Server Not Connected", message="No connection to servers found")
+
+    def Keypress(self, event):
+        if event.keycode == 71:
+            self.Run()
+
     #Insert Query Data
     def InsertTable(self):
         columns = ("#1", "#2")
@@ -101,11 +141,6 @@ class SSCI:
         self.table.insert(parent="", index=0, iid=0, text="", values=("1", "Vineet", "Alpha"))
         self.table.insert(parent="", index=1, iid=1, text="", values=("2", "Anil", "Bravo"))
         self.table.pack(side=BOTTOM, fill="both")
-
-    def Ready(self):
-        #self.btnRun['state'] = NORMAL
-        #print('teste')
-        pass
 
 #ssci = Tk()
 #Main(ssci)

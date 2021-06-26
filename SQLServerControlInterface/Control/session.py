@@ -1,5 +1,7 @@
 import random
 
+from Model.connectDB import *
+
 class Session:
     def __init__(self):
         self.key = None
@@ -8,6 +10,7 @@ class Session:
         self.port = None
         self.user = None
         self.password = None
+        self.database = "master"
 
     def Init(self, host, port, user, password):
         seq = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -29,3 +32,7 @@ class Session:
         self.port = None
         self.user = None
         self.password = None
+        self.database = "master"
+
+    def SetDatabase(self, database):
+        self.database = database

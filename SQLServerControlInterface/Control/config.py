@@ -5,7 +5,15 @@ class Config:
         self.theme = None
     
     def CreateDefaults(self):
-        pass
+        try:
+            configs = {
+                "theme": "Dark"
+            }
+
+            with open("config.json", "w") as f:
+                json.dump(configs, f)
+        except ValueError:
+            print(ValueError)
 
     def Save(self, theme):
         try:
