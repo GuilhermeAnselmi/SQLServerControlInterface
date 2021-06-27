@@ -97,6 +97,7 @@ class SSCI:
         if session.active:
             if self.txtQuery.get("1.0", END).strip() != "":
                 verify = True
+                use = False
 
                 try:
                     #query = self.txtQuery.selection_get()      ERROR IN TRY EXCEPT
@@ -110,18 +111,33 @@ class SSCI:
                     if verify:
                         session.SetDatabase(query.split()[1].lower())
 
-                if verify:
+                        if len(query.split()) <= 2:
+                            use = True
+                            messagebox.showinfo(title="Query Exec", message="Success sending query")
+                        else:
+                            query = " ".join(query.split()[2:])
+
+                if verify and not use:
                     data = Data(session=session).Send(query)
 
-                    if data == 1:
-                        #Modificar para exibir quantas linhas foram afetadas
-                        messagebox.showinfo(title="Query Accepted", message="Success!")
-                    elif data == 0:
-                        messagebox.showwarning(title="Incorrect Query",
-                                               message="This query has incorrect instructions and/or arguments that do not exist in the database.")
+                    if not data:
+                        messagebox.showwarning(title="Incorrect Query", message="This query has incorrect instructions and/or arguments that do not exist in the database.")
                     else:
-                        #Exibir a tabela com os dados
-                        print(data)
+                        try:
+                            execute = True
+
+                            while execute:
+                                row = data.fetchall()
+
+                                if len(row) != 0:
+                                    for line in row:
+                                        print(line)
+
+                                    print("Next table")
+                                else:
+                                    execute = False
+                        except:
+                            messagebox.showwarning(title="Incorrect Query", message="This query has incorrect instructions and/or arguments that do not exist in the database.")
                 elif not verify:
                     messagebox.showwarning(title="Database does not exists", message="The database entered was not found")
         else:

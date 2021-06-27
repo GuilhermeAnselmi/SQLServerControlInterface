@@ -11,15 +11,16 @@ class Data:
 
     def Send(self, query):
         try:
-            exec = self.cursor.execute(query)
+            self.cursor.execute(query)
+            return self.cursor
         except:
-            return 0
+            return False
 
-        try:
-            row = self.cursor.fetchone()
-            return row
-        except:
-            return 1
+        #try:
+            #self.cursor.fetchone()
+            #return self.cursor
+        #except:
+            #return 1
 
     def TestDatabase(self, database):
         try:
