@@ -6,7 +6,7 @@ import pymssql
 class Data:
     def __init__(self, session):
         self.conn = pymssql.connect(server=session.host, port=session.port, user=session.user, password=session.password,
-                                    database=session.database)
+                                    database=session.database, autocommit=True)
         self.cursor = self.conn.cursor()
 
     def Send(self, query):
