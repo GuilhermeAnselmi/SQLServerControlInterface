@@ -127,21 +127,7 @@ class SSCI:
                     elif data.rowcount >= 0 and data.description == None:
                         messagebox.showinfo(title="Transaction Accepted", message=str(data.rowcount) + " line affected")
                     else:
-                        try:
-                            execute = True
-
-                            while execute:
-                                row = data.fetchall()
-
-                                if len(row) != 0:
-                                    for line in row:
-                                        print(line)
-
-                                    print("Next table")
-                                else:
-                                    execute = False
-                        except:
-                            messagebox.showwarning(title="Incorrect Query", message="This query has incorrect instructions and/or arguments that do not exist in the database.")
+                        self.InsertTable(table=data)
                 elif not verify:
                     messagebox.showwarning(title="Database does not exists", message="The database entered was not found")
         else:
@@ -152,15 +138,52 @@ class SSCI:
             self.Run()
 
     #Insert Query Data
-    def InsertTable(self):
-        columns = ("#1", "#2")
+    def InsertTable(self, table):
+        try:
+            execute = True
 
-        self.table = ttk.Treeview(self.dataTable, columns=columns, show="headings")
-        self.table.heading("0", text="Teste", anchor=CENTER)
-        self.table.heading("1", text="Teste", anchor=CENTER)
-        self.table.insert(parent="", index=0, iid=0, text="", values=("1", "Vineet", "Alpha"))
-        self.table.insert(parent="", index=1, iid=1, text="", values=("2", "Anil", "Bravo"))
-        self.table.pack(side=BOTTOM, fill="both")
+            while execute:
+                row = table.fetchall()
+                columns = []
+                cont = 0
+
+                if len(row) != 0:
+                    for i in range(len(table.description)):
+                        columns.append("#" + str(i + 1))
+
+                    self.csTableY = Scrollbar(self.dataTable, orient="vertical")
+                    self.csTableY.pack(side=RIGHT, fill="y")
+                    self.csTableX = Scrollbar(self.dataTable, orient="horizontal")
+                    self.csTableX.pack(side=BOTTOM, fill="x")
+
+                    self.table = ttk.Treeview(self.dataTable, columns=columns, show="headings", yscrollcommand=self.csTableY.set, xscrollcommand=self.csTableX.set)
+
+                    self.csTableY.config(command=self.table.yview)
+                    self.csTableX.config(command=self.table.xview)
+
+                    for i in range(len(table.description)):
+                        self.table.heading(str(i), text=str(table.description[i][0]), anchor=CENTER)
+
+                    for line in row:
+                        self.table.insert(parent="", index=cont, iid=cont, text="", values=line)
+                        cont = cont + 1
+
+                    self.table.pack(side=BOTTOM, fill="both")
+                else:
+                    execute = False
+        except:
+            messagebox.showwarning(title="Incorrect Query",
+                                   message="This query has incorrect instructions and/or arguments that do not exist in the database.")
+
+
+        #columns = ("#1", "#2")
+
+        #self.table = ttk.Treeview(self.dataTable, columns=columns, show="headings")
+        #self.table.heading("0", text="Teste", anchor=CENTER)
+        #self.table.heading("1", text="Teste", anchor=CENTER)
+        #self.table.insert(parent="", index=0, iid=0, text="", values=("1", "Vineet", "Alpha"))
+        #self.table.insert(parent="", index=1, iid=1, text="", values=("2", "Anil", "Bravo"))
+        #self.table.pack(side=BOTTOM, fill="both")
 
 #ssci = Tk()
 #Main(ssci)

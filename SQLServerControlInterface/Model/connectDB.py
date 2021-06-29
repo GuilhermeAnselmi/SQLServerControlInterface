@@ -16,12 +16,6 @@ class Data:
         except:
             return False
 
-        #try:
-            #self.cursor.fetchone()
-            #return self.cursor
-        #except:
-            #return 1
-
     def TestDatabase(self, database):
         try:
             exec = self.cursor.execute("use " + database)
