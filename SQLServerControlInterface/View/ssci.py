@@ -118,12 +118,13 @@ class SSCI:
                             query = " ".join(query.split()[2:])
 
                 if verify and not use:
-                    #'callproc', 'close', 'connection', 'description', 'execute', 'executemany', 'fetchall', 'fetchmany', 'fetchone', 'lastrowid', 'nextset', 'returnvalue', 'rowcount', 'rownumber', 'setinputsizes', 'setoutputsize'
                     data = Data(session=session).Send(query)
 
                     if not data:
                         messagebox.showwarning(title="Incorrect Query", message="This query has incorrect instructions and/or arguments that do not exist in the database.")
-                    elif data.rowcount >= 0:
+                    elif data.rowcount < 0 and data.description == None:
+                        messagebox.showinfo(title="Transaction Accepted", message="Query sent and returned successfully")
+                    elif data.rowcount >= 0 and data.description == None:
                         messagebox.showinfo(title="Transaction Accepted", message=str(data.rowcount) + " line affected")
                     else:
                         try:
